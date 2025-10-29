@@ -150,6 +150,11 @@ class User extends BaseUser
 
     private $introductions;
 
+    /**
+     * @var Collection|UserCollection[]
+     */
+    private $collections;
+
     public function __construct()
     {
         $this->decks = new ArrayCollection();
@@ -159,6 +164,7 @@ class User extends BaseUser
         $this->votes = new ArrayCollection();
         $this->following = new ArrayCollection();
         $this->followers = new ArrayCollection();
+        $this->collections = new ArrayCollection();
         $this->reputation = 1;
         $this->faction = 'neutral-runner';
         $this->creation = new \DateTime();
@@ -807,5 +813,34 @@ class User extends BaseUser
         $this->introductions = $introductions;
 
         return $this;
+    }
+
+    /**
+     * @return Collection|UserCollection[]
+     */
+    public function getCollections()
+    {
+        return $this->collections;
+    }
+
+    /**
+     * Add collection
+     * @param UserCollection $collection
+     * @return User
+     */
+    public function addCollection(UserCollection $collection)
+    {
+        $this->collections[] = $collection;
+
+        return $this;
+    }
+
+    /**
+     * Remove collection
+     * @param UserCollection $collection
+     */
+    public function removeCollection(UserCollection $collection)
+    {
+        $this->collections->removeElement($collection);
     }
 }

@@ -1,0 +1,36 @@
+AppBundle\Entity\UserCollection:
+    type: entity
+    table: user_collection
+    repositoryClass: AppBundle\Repository\UserCollectionRepository
+    indexes:
+        user_pack_index:
+            columns: [ user_id, pack_id ]
+    uniqueConstraints:
+        user_pack_unique:
+            columns: [ user_id, pack_id ]
+    manyToOne:
+        user:
+            targetEntity: User
+            inversedBy: collections
+            joinColumn:
+                name: user_id
+                referencedColumnName: id
+                onDelete: CASCADE
+        pack:
+            targetEntity: Pack
+            joinColumn:
+                name: pack_id
+                referencedColumnName: id
+                onDelete: CASCADE
+    fields:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+        dateAdded:
+            type: datetime
+            nullable: false
+            column: date_added
+    lifecycleCallbacks: {}
+

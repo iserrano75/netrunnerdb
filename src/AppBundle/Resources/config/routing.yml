@@ -375,6 +375,21 @@ user_profile_save:
     requirements:
         _locale: \w\w
 
+user_collection:
+    path: /{_locale}/user/collection
+    methods: [GET]
+    defaults:
+        _controller: AppBundle:Collection:index
+        _locale: en
+    requirements:
+        _locale: \w\w
+
+user_collection_toggle:
+    path: /user/collection/toggle
+    methods: [POST]
+    defaults:
+        _controller: AppBundle:Collection:togglePack
+
 clean_user_profile_view:
     path: /profile/{user_name}
     methods: [GET]
