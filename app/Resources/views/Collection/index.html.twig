@@ -1,0 +1,118 @@
+{% extends '/layout.html.twig' %}
+
+{% block body %}
+
+<div class="container">
+
+<div class="row">
+<div class="col-md-12">
+<div class="panel panel-default">
+<div class="panel-heading">
+<h3 class="panel-title">My Collection</h3>
+</div>
+<div class="panel-body">
+
+<p class="help-block">Mark the packs you own to keep track of your collection. Click on a pack to toggle ownership.</p>
+
+<div id="collection-container">
+{% for cycle in cycles %}
+    <div class="cycle-section" style="margin-bottom: 30px;">
+        <h4 class="cycle-name">{{ cycle.name }}</h4>
+        <div class="row">
+        {% for pack in cycle.packs %}
+            {% set isOwned = ownedPackIds[pack.id] is defined %}
+            <div class="col-sm-6 col-md-4 col-lg-3" style="margin-bottom: 15px;">
+                <div class="pack-item" data-pack-id="{{ pack.id }}" style="cursor: pointer; padding: 10px; border: 2px solid {% if isOwned %}#5cb85c{% else %}#ddd{% endif %}; border-radius: 4px; background-color: {% if isOwned %}#f0fff0{% else %}#fff{% endif %}; transition: all 0.3s;">
+                    <div class="pack-checkbox" style="float: right; font-size: 20px; color: {% if isOwned %}#5cb85c{% else %}#ccc{% endif %};">
+                        {% if isOwned %}
+                            <span class="glyphicon glyphicon-check"></span>
+                        {% else %}
+                            <span class="glyphicon glyphicon-unchecked"></span>
+                        {% endif %}
+                    </div>
+                    <div class="pack-name" style="font-weight: bold; margin-bottom: 5px;">{{ pack.name }}</div>
+                    <div class="pack-info" style="font-size: 12px; color: #777;">
+                        {% if pack.dateRelease %}
+                            Released: {{ pack.dateRelease|date('Y-m-d') }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+{% endfor %}
+</div>
+
+<div id="collection-message" class="alert" style="display: none; margin-top: 20px;"></div>
+
+</div>
+</div>
+</div>
+</div>
+</div> <!-- .container -->
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('.pack-item').click(function() {
+        var packItem = $(this);
+        var packId = packItem.data('pack-id');
+        
+        // Disable clicking while processing
+        packItem.css('pointer-events', 'none');
+        
+        $.ajax({
+            url: '{{ path('user_collection_toggle') }}',
+            type: 'POST',
+            data: { pack_id: packId },
+            success: function(response) {
+                if (response.success) {
+                    var checkbox = packItem.find('.pack-checkbox');
+                    var isOwned = response.owned;
+                    
+                    // Update UI
+                    if (isOwned) {
+                        packItem.css({
+                            'border-color': '#5cb85c',
+                            'background-color': '#f0fff0'
+                        });
+                        checkbox.html('<span class="glyphicon glyphicon-check"></span>');
+                        checkbox.css('color', '#5cb85c');
+                        showMessage('Pack added to your collection!', 'success');
+                    } else {
+                        packItem.css({
+                            'border-color': '#ddd',
+                            'background-color': '#fff'
+                        });
+                        checkbox.html('<span class="glyphicon glyphicon-unchecked"></span>');
+                        checkbox.css('color', '#ccc');
+                        showMessage('Pack removed from your collection.', 'info');
+                    }
+                } else {
+                    showMessage('Error: ' + response.message, 'danger');
+                }
+            },
+            error: function() {
+                showMessage('An error occurred. Please try again.', 'danger');
+            },
+            complete: function() {
+                // Re-enable clicking
+                packItem.css('pointer-events', 'auto');
+            }
+        });
+    });
+    
+    function showMessage(message, type) {
+        var messageDiv = $('#collection-message');
+        messageDiv.removeClass('alert-success alert-info alert-danger');
+        messageDiv.addClass('alert-' + type);
+        messageDiv.text(message);
+        messageDiv.fadeIn();
+        setTimeout(function() {
+            messageDiv.fadeOut();
+        }, 3000);
+    }
+});
+</script>
+
+{% endblock %}

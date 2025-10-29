@@ -20,6 +20,11 @@ AppBundle\Entity\User:
             orderBy: {'dateCreation':'DESC'}
             mappedBy: user
             fetch: EXTRA_LAZY
+        collections:
+            targetEntity: UserCollection
+            mappedBy: user
+            cascade: ["persist", "remove"]
+            fetch: EXTRA_LAZY
     manyToMany:
         favorites:
             targetEntity: Decklist
