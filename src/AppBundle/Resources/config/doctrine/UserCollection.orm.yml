@@ -32,4 +32,5 @@ AppBundle\Entity\UserCollection:
             type: datetime
             nullable: false
             column: date_added
-    lifecycleCallbacks: {  }
+    lifecycleCallbacks: {}
+
